@@ -1,8 +1,9 @@
 <template>
-	<div class="carousel">
+	<div id="carousel" class="carousel">
 		<slot></slot>
 		<div class="carousel-nav carousel-prev fa fa-angle-left" @click.prevent="prev"></div>
 		<div class="carousel-nav carousel-next fa fa-angle-right" @click.prevent="next"></div>
+    <div class="clear"></div>
 	</div>
 </template>
 
@@ -12,7 +13,12 @@ export default {
     return {
       index: 0,
       slides: [],
-      direction: null
+      direction: null,
+      dragPositions: {
+        start: 0,
+        end: 0
+      },
+      carousel: null
     }
   },
   mounted () {
@@ -20,6 +26,8 @@ export default {
     this.slides.forEach((slide, i) => {
       slide.index = i
     })
+    this.carousel = document.getElementById('carousel')
+    this.detectDrag.bind(this)()
   },
   methods: {
     next () {
@@ -35,16 +43,35 @@ export default {
       if (this.index < 0) {
         this.index = this.$children.length - 1
       }
+    },
+    detectDrag () {
+      this.carousel.addEventListener('dragstart', this.dragStart.bind(this))
+      this.carousel.addEventListener('dragover', function (e) {
+        e.preventDefault()
+      })
+      this.carousel.addEventListener('dragend', this.dragEnd.bind(this))
+      console.log('detectDrag' + this)
+    },
+    dragStart (e) {
+      this.dragPositions.start = e.x
+    },
+    dragEnd (e) {
+      this.dragPositions.end = e.x
+      if (this.dragPositions.start < this.dragPositions.end) this.prev()
+      else if (this.dragPositions.start > this.dragPositions.end) this.next()
     }
   }
 }
+
 </script>
 
 <style>
 	.carousel {
 		font-size: 2.8em;
 		position: relative;
-	}
+	  cursor: pointer;
+    width: 100%;
+  }
 	.carousel-nav {
 		display: block;
 		border-radius: 0;
@@ -62,4 +89,9 @@ export default {
 	.carousel-next {
 		right: 42%;
 	}
+  #app::before, #app::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
 </style>

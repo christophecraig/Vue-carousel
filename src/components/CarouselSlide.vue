@@ -1,6 +1,6 @@
 <template>
 <transition :name="transition">
-	<div class="carousel-item" v-show="visible" :class="{visible, visible}">
+	<div class="carousel-item" v-show="visible" :class="{visible, visible}" draggable>
 		<slot></slot>
 	</div>
 </transition>
@@ -15,7 +15,6 @@
     },
     computed: {
       transition () {
-        console.log(this.$parent.direction)
         return 'slide-' + this.$parent.direction
       },
       visible () {
@@ -57,6 +56,9 @@
 		to {
 			transform: translate3d(100%, 0, 0);
 		}
+	}
+	.carousel-item img {
+		max-width: 100%;
 	}
 	.carousel-item {
 		position: absolute;
